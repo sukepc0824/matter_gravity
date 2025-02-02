@@ -47,8 +47,8 @@
             window.addEventListener("devicemotion", function devicemotionHandler(event) {
 
                 //重力加速度 (物体の重力を調節)
-                var xg = event.accelerationIncludingGravity.x / 10;
-                var yg = event.accelerationIncludingGravity.y / 10;
+                var xg = event.accelerationIncludingGravity.x / 8;
+                var yg = event.accelerationIncludingGravity.y / 8;
 
                 // 傾きに応じて重力を調節
                 switch (deviceOrientation) {
@@ -121,7 +121,8 @@
                 friction: 0,
                 restitution: 0,
                 slop: 3,
-                density: 0.0005
+                density: 0.0005,
+                timeScale:1.4
             };
             this.body = Bodies.circle(x, y, r, options);
             this.r = r;
