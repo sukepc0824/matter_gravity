@@ -87,7 +87,8 @@
             let options = {
                 friction: 0,
                 restitution: 0,
-                slop: 3
+                slop: 3,
+                density: 0.0005
             };
             this.body = Bodies.circle(x, y, r, options);
             this.r = r;
@@ -119,26 +120,26 @@
             // 傾きに応じて重力を調節
             switch (deviceOrientation) {
                 case 0:
-                    engine.gravity.x = xg + event.acceleration.x;
-                    engine.gravity.y = -yg + event.acceleration.y;
+                    engine.world.gravity.x = xg + event.acceleration.x;
+                    engine.world.gravity.y = -yg + event.acceleration.y;
                     break;
                 case 90:
-                    engine.gravity.x = -yg - event.acceleration.x;
-                    engine.gravity.y = -xg + event.acceleration.x;
+                    engine.world.gravity.x = -yg - event.acceleration.x;
+                    engine.world.gravity.y = -xg + event.acceleration.x;
                     break;
                 case -90:
-                    engine.gravity.x = yg + event.acceleration.x;
-                    engine.gravity.y = xg - event.acceleration.x;
+                    engine.world.gravity.x = yg + event.acceleration.x;
+                    engine.world.gravity.y = xg - event.acceleration.x;
                     break;
                 case 180:
-                    engine.gravity.x = -xg - event.acceleration.x;
-                    engine.gravity.y = yg - event.acceleration.x;
+                    engine.world.gravity.x = -xg - event.acceleration.x;
+                    engine.world.gravity.y = yg - event.acceleration.x;
             }
 
             // androidとiOSは加速度が真逆なのでその対応
             if (window.navigator.userAgent.indexOf('Android') > 0) {
-                engine.gravity.x = - engine.gravity.x;
-                engine.gravity.y = - engine.gravity.y;
+                engine.world.gravity.x = - engine.gravity.x;
+                engine.world.gravity.y = - engine.gravity.y;
             }
         });
     </script>
