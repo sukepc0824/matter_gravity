@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        let Engine = Matter.Engine,
+            World = Matter.World,
+            Bodies = Matter.Bodies;
+
+        let engine;
+        let world;
+        let circles = [];
+        let boundaries = [];
+
+        let ground;
+
+        function setup() {
+            createCanvas(window.innerWidth, window.innerHeight);
+            engine = Engine.create();
+            world = engine.world;
+
+            boundaries.push(new Boundary(width / 2, height, width, 20, 0));
+            boundaries.push(new Boundary(width / 2, 0, width, 20, 0));
+            boundaries.push(new Boundary(0, height / 2, 20, height, 0));
+            boundaries.push(new Boundary(width, height / 2, 20, height, 0));
+
+            for (let index = 0; index < 20; index++) {
+                circles.push(new Circle(19, 19, width / 10))
+            }
+        }
+
+        function draw() {
+            background(180);
+            Engine.update(engine);
+            for (let i = 0; i < circles.length; i++) {
+                circles[i].show();
+            }
+            for (let i = 0; i < boundaries.length; i++) {
+                boundaries[i].show();
+            }
+        }
+
+        function Boundary(x, y, w, h, a) {
+            let options = {
+                friction: 0.1,
+                restitution: 0.95,
+                angle: a,
+                isStatic: true,
+            };
+            this.body = Bodies.rectangle(x, y, w, h, options);
+            this.w = w;
+            this.h = h;
+            World.add(world, this.body);
+            console.log(this.body);
+
+            this.show = function () {
+                let pos = this.body.position;
+                let angle = this.body.angle;
+                push();
+                translate(pos.x, pos.y);
+                rotate(angle);
+                rectMode(CENTER);
+                strokeWeight(1);
+                noStroke();
+                fill(0, 100, 200);
+                rect(0, 0, this.w, this.h);
+                pop();
+            };
+        }
+
+        function Circle(x, y, r) {
+            let options = {
+                friction: 0,
+                restitution: 0,
+                slop: 3
+            };
+            this.body = Bodies.circle(x, y, r, options);
+            this.r = r;
+            World.add(world, this.body);
+
+            this.show = function () {
+                let pos = this.body.position;
+                let angle = this.body.angle;
+                push();
+                translate(pos.x, pos.y);
+                rotate(angle);
+                rectMode(CENTER);
+                strokeWeight(1);
+                stroke(255);
+                fill(0, 0, 80);
+                ellipse(0, 0, this.r * 2);
+                pop();
+            };
+        }
+
+        var deviceOrientation = window.orientation; //デバイスの傾きを取得
+
+        window.addEventListener("devicemotion", function devicemotionHandler(event) {
+
+            //重力加速度 (物体の重力を調節)
+            var xg = event.accelerationIncludingGravity.x / 10;
+            var yg = event.accelerationIncludingGravity.y / 10;
+
+            // 傾きに応じて重力を調節
+            switch (deviceOrientation) {
+                case 0:
+                    engine.gravity.x = xg + event.acceleration.x;
+                    engine.gravity.y = -yg + event.acceleration.y;
+                    break;
+                case 90:
+                    engine.gravity.x = -yg - event.acceleration.x;
+                    engine.gravity.y = -xg + event.acceleration.x;
+                    break;
+                case -90:
+                    engine.gravity.x = yg + event.acceleration.x;
+                    engine.gravity.y = xg - event.acceleration.x;
+                    break;
+                case 180:
+                    engine.gravity.x = -xg - event.acceleration.x;
+                    engine.gravity.y = yg - event.acceleration.x;
+            }
+
+            // androidとiOSは加速度が真逆なのでその対応
+            if (window.navigator.userAgent.indexOf('Android') > 0) {
+                engine.gravity.x = - engine.gravity.x;
+                engine.gravity.y = - engine.gravity.y;
+            }
+        });
+    </script>
+</body>
+
+</html>
